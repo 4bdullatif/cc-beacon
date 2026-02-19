@@ -3,7 +3,7 @@
 Floating HUD notifications for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) on macOS. No dock icon, no Notification Center — just a borderless overlay.
 
 <p align="center">
-  <img src="preview.png" alt="cc-beacon preview" width="680">
+  <img src="preview.svg" alt="cc-beacon preview" width="420">
 </p>
 
 ## Install

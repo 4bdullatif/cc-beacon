@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="290" viewBox="0 0 400 290">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d0d10"/>
+      <stop offset="100%" stop-color="#09090b"/>
+    </linearGradient>
+    <clipPath id="card1clip"><rect x="30" y="16" width="340" height="76" rx="12"/></clipPath>
+    <clipPath id="card2clip"><rect x="30" y="104" width="340" height="76" rx="12"/></clipPath>
+    <clipPath id="card3clip"><rect x="30" y="192" width="340" height="76" rx="12"/></clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="290" fill="url(#bg)" rx="16"/>
+
+  <!-- Card 1: Permission (amber) -->
+  <g filter="url(#shadow)">
+    <rect x="30" y="16" width="340" height="76" rx="12" fill="#161618" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+    <!-- Accent strip -->
+    <rect x="30" y="26" width="2.5" height="56" rx="1.25" fill="#fbbf24" clip-path="url(#card1clip)"/>
+    <!-- Icon -->
+    <text x="48" y="48" font-size="15" fill="rgba(255,255,255,0.85)">⏸</text>
+    <!-- Title -->
+    <text x="72" y="42" font-family="system-ui,-apple-system,sans-serif" font-size="12.5" font-weight="600" fill="rgba(255,255,255,0.9)">Permission Required</text>
+    <!-- Message -->
+    <text x="72" y="58" font-family="system-ui,-apple-system,sans-serif" font-size="10.5" font-weight="300" fill="rgba(255,255,255,0.30)">Claude wants to run: npm install</text>
+    <!-- Project -->
+    <text x="72" y="78" font-family="ui-monospace,monospace" font-size="9" font-weight="300" fill="rgba(255,255,255,0.14)">📁 my-saas-app</text>
+  </g>
+
+  <!-- Card 2: Feedback (blue) -->
+  <g filter="url(#shadow)">
+    <rect x="30" y="104" width="340" height="76" rx="12" fill="#161618" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+    <rect x="30" y="114" width="2.5" height="56" rx="1.25" fill="#60a5fa" clip-path="url(#card2clip)"/>
+    <text x="48" y="136" font-size="15" fill="rgba(255,255,255,0.85)">💬</text>
+    <text x="72" y="130" font-family="system-ui,-apple-system,sans-serif" font-size="12.5" font-weight="600" fill="rgba(255,255,255,0.9)">Waiting for Input</text>
+    <text x="72" y="146" font-family="system-ui,-apple-system,sans-serif" font-size="10.5" font-weight="300" fill="rgba(255,255,255,0.30)">Which database should I use for this project?</text>
+    <text x="72" y="166" font-family="ui-monospace,monospace" font-size="9" font-weight="300" fill="rgba(255,255,255,0.14)">📁 my-saas-app</text>
+  </g>
+
+  <!-- Card 3: Done (green) -->
+  <g filter="url(#shadow)">
+    <rect x="30" y="192" width="340" height="76" rx="12" fill="#161618" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+    <rect x="30" y="202" width="2.5" height="56" rx="1.25" fill="#34d399" clip-path="url(#card3clip)"/>
+    <text x="50" y="225" font-family="system-ui,-apple-system,sans-serif" font-size="14" font-weight="500" fill="rgba(255,255,255,0.85)">✓</text>
+    <text x="72" y="218" font-family="system-ui,-apple-system,sans-serif" font-size="12.5" font-weight="600" fill="rgba(255,255,255,0.9)">Task Complete</text>
+    <text x="72" y="234" font-family="system-ui,-apple-system,sans-serif" font-size="10.5" font-weight="300" fill="rgba(255,255,255,0.30)">All 47 tests passing. Created PR #142 for review.</text>
+    <text x="72" y="254" font-family="ui-monospace,monospace" font-size="9" font-weight="300" fill="rgba(255,255,255,0.14)">📁 my-saas-app</text>
+  </g>
+</svg>

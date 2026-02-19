@@ -10,16 +10,18 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0c0c0e;
-    --surface: #141416;
-    --border: rgba(255,255,255,0.04);
-    --text: #d4d4d8;
-    --text-dim: #52525b;
+    --bg: #09090b;
+    --surface: #111113;
+    --surface-raised: #161618;
+    --border: rgba(255,255,255,0.05);
+    --border-hover: rgba(255,255,255,0.10);
+    --text: #e4e4e7;
+    --text-dim: #71717a;
     --text-muted: #3f3f46;
-    --amber: #f59e0b;
+    --amber: #fbbf24;
     --blue: #60a5fa;
-    --green: #4ade80;
-    --gray: #71717a;
+    --green: #34d399;
+    --green-dim: rgba(52,211,153,0.08);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,12 +34,12 @@
     overflow-x: hidden;
   }
 
-  /* ── Grain overlay ── */
+  /* ── Grain ── */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    opacity: 0.025;
+    opacity: 0.03;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     pointer-events: none;
     z-index: 100;
@@ -45,7 +47,7 @@
 
   /* ── Hero ── */
   .hero {
-    padding: 120px 24px 80px;
+    padding: 128px 24px 72px;
     text-align: center;
     position: relative;
   }
@@ -53,30 +55,30 @@
   .hero::after {
     content: '';
     position: absolute;
-    top: 0;
+    top: -40px;
     left: 50%;
     transform: translateX(-50%);
-    width: 480px;
-    height: 480px;
-    background: radial-gradient(circle, rgba(74,222,128,0.03) 0%, transparent 70%);
+    width: 600px;
+    height: 500px;
+    background: radial-gradient(ellipse, rgba(52,211,153,0.04) 0%, transparent 65%);
     pointer-events: none;
   }
 
   .badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    font-weight: 300;
-    letter-spacing: 0.08em;
+    font-size: 0.6rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-dim);
     border: 1px solid var(--border);
     border-radius: 100px;
-    padding: 6px 14px;
-    margin-bottom: 28px;
-    background: rgba(255,255,255,0.01);
+    padding: 7px 16px;
+    margin-bottom: 32px;
+    background: var(--surface);
   }
   .badge::before {
     content: '';
@@ -84,16 +86,22 @@
     height: 5px;
     border-radius: 50%;
     background: var(--green);
-    box-shadow: 0 0 8px rgba(74,222,128,0.4);
+    box-shadow: 0 0 10px rgba(52,211,153,0.5);
+    animation: pulse-dot 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 6px rgba(52,211,153,0.3); }
+    50% { box-shadow: 0 0 14px rgba(52,211,153,0.6); }
   }
 
   .hero h1 {
-    font-size: 3rem;
+    font-size: 3.2rem;
     font-weight: 300;
-    letter-spacing: -0.04em;
-    line-height: 1.1;
+    letter-spacing: -0.045em;
+    line-height: 1.05;
     color: #fafafa;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
   }
   .hero h1 span {
     font-weight: 600;
@@ -103,9 +111,9 @@
     font-size: 0.95rem;
     font-weight: 300;
     color: var(--text-dim);
-    max-width: 380px;
-    margin: 0 auto 32px;
-    line-height: 1.65;
+    max-width: 360px;
+    margin: 0 auto 36px;
+    line-height: 1.7;
   }
 
   .cta {
@@ -113,26 +121,26 @@
     align-items: center;
     gap: 8px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 400;
     color: var(--text);
     text-decoration: none;
-    padding: 10px 22px;
-    border: 1px solid rgba(255,255,255,0.08);
+    padding: 10px 24px;
+    border: 1px solid var(--border);
     border-radius: 8px;
-    background: rgba(255,255,255,0.02);
-    transition: all 0.3s ease;
+    background: var(--surface);
+    transition: all 0.25s ease;
   }
   .cta:hover {
-    background: rgba(255,255,255,0.05);
-    border-color: rgba(255,255,255,0.14);
+    background: var(--surface-raised);
+    border-color: var(--border-hover);
     transform: translateY(-1px);
   }
   .cta svg {
     width: 14px;
     height: 14px;
     opacity: 0.5;
-    transition: opacity 0.3s;
+    transition: opacity 0.25s;
   }
   .cta:hover svg { opacity: 0.8; }
 
@@ -141,32 +149,32 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 14px;
-    padding: 0 24px 80px;
+    gap: 12px;
+    padding: 0 24px 88px;
     position: relative;
   }
 
   .notif {
     width: 340px;
     border-radius: 14px;
-    background: rgba(28, 28, 32, 0.92);
+    background: rgba(22, 22, 24, 0.95);
     border: 0.5px solid rgba(255,255,255,0.06);
     box-shadow:
-      0 1px 2px rgba(0,0,0,0.3),
-      0 8px 32px rgba(0,0,0,0.4),
-      inset 0 1px 0 rgba(255,255,255,0.02);
+      0 1px 3px rgba(0,0,0,0.4),
+      0 12px 40px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.03);
     display: flex;
     align-items: flex-start;
     padding: 14px 16px;
     gap: 12px;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     opacity: 0;
-    transform: translateY(8px) scale(0.98);
-    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(10px) scale(0.97);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .notif.show {
     opacity: 1;
@@ -182,22 +190,22 @@
     width: 2.5px;
     border-radius: 2px;
   }
-  .notif.perm::before  { background: var(--amber); box-shadow: 0 0 12px rgba(245,158,11,0.15); }
-  .notif.feed::before  { background: var(--blue);  box-shadow: 0 0 12px rgba(96,165,250,0.15); }
-  .notif.done::before  { background: var(--green); box-shadow: 0 0 12px rgba(74,222,128,0.15); }
+  .notif.perm::before  { background: var(--amber); box-shadow: 0 0 16px rgba(251,191,36,0.12); }
+  .notif.feed::before  { background: var(--blue);  box-shadow: 0 0 16px rgba(96,165,250,0.12); }
+  .notif.done::before  { background: var(--green); box-shadow: 0 0 16px rgba(52,211,153,0.12); }
 
   .n-icon {
     font-size: 16px;
     margin-top: 1px;
     flex-shrink: 0;
-    opacity: 0.9;
+    opacity: 0.85;
   }
   .n-body { flex: 1; min-width: 0; }
   .n-title {
     font-family: 'DM Sans', sans-serif;
     font-size: 12.5px;
     font-weight: 500;
-    color: rgba(255,255,255,0.88);
+    color: rgba(255,255,255,0.9);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -206,7 +214,7 @@
     font-family: 'DM Sans', sans-serif;
     font-size: 11px;
     font-weight: 300;
-    color: rgba(255,255,255,0.32);
+    color: rgba(255,255,255,0.30);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -216,7 +224,7 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 9.5px;
     font-weight: 300;
-    color: rgba(255,255,255,0.16);
+    color: rgba(255,255,255,0.14);
     margin-top: 6px;
     letter-spacing: 0.01em;
   }
@@ -225,14 +233,14 @@
   .flow-section {
     max-width: 520px;
     margin: 0 auto;
-    padding: 0 24px 48px;
+    padding: 0 24px 56px;
   }
 
   .section-label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem;
-    font-weight: 300;
-    letter-spacing: 0.1em;
+    font-size: 0.58rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--text-muted);
     margin-bottom: 16px;
@@ -247,15 +255,15 @@
   }
   .flow pre {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.68rem;
+    font-size: 0.66rem;
     font-weight: 300;
     color: var(--text-muted);
     line-height: 2;
     overflow-x: auto;
   }
-  .flow .g { color: var(--green); opacity: 0.8; }
-  .flow .b { color: var(--blue); opacity: 0.8; }
-  .flow .y { color: var(--amber); opacity: 0.8; }
+  .flow .g { color: var(--green); opacity: 0.85; }
+  .flow .b { color: var(--blue); opacity: 0.85; }
+  .flow .y { color: var(--amber); opacity: 0.85; }
   .flow .w { color: var(--text-dim); }
 
   /* ── Install block ── */
@@ -269,50 +277,69 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 18px 22px;
-    position: relative;
+    padding: 14px 16px 14px 20px;
     cursor: pointer;
-    transition: border-color 0.3s;
+    transition: border-color 0.25s, background 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
   .install-block:hover {
-    border-color: rgba(255,255,255,0.08);
+    border-color: var(--border-hover);
+    background: var(--surface-raised);
   }
 
   .install-block code {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 300;
     color: var(--text-dim);
     line-height: 1.6;
-    display: block;
-    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
     overflow-x: auto;
+    white-space: nowrap;
   }
-  .install-block code .cmd { color: var(--green); opacity: 0.7; }
+  .install-block code .hl { color: var(--green); opacity: 0.75; }
 
-  .copy-hint {
-    position: absolute;
-    top: 50%;
-    right: 18px;
-    transform: translateY(-50%);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
+  .copy-btn {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
     color: var(--text-muted);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    opacity: 0;
-    transition: opacity 0.2s;
-    pointer-events: none;
+    padding: 0;
   }
-  .install-block:hover .copy-hint { opacity: 1; }
-  .copy-hint.copied { color: var(--green); }
+  .copy-btn:hover {
+    background: rgba(255,255,255,0.04);
+    border-color: var(--border);
+    color: var(--text-dim);
+  }
+  .copy-btn svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  .copy-btn.copied {
+    color: var(--green);
+    border-color: rgba(52,211,153,0.15);
+    background: rgba(52,211,153,0.06);
+  }
+  .copy-btn.copied svg { transform: scale(1.1); }
 
   /* ── Footer ── */
   footer {
     text-align: center;
     padding: 0 24px 48px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.58rem;
+    font-size: 0.56rem;
     font-weight: 300;
     color: var(--text-muted);
     letter-spacing: 0.04em;
@@ -326,10 +353,10 @@
 
   /* ── Responsive ── */
   @media (max-width: 480px) {
-    .hero { padding: 80px 20px 60px; }
-    .hero h1 { font-size: 2.2rem; }
+    .hero { padding: 88px 20px 56px; }
+    .hero h1 { font-size: 2.4rem; }
     .notif { width: 300px; }
-    .showcase { padding: 0 16px 60px; }
+    .showcase { padding: 0 16px 64px; }
   }
 </style>
 </head>
@@ -392,8 +419,13 @@
 <div class="install-section">
   <div class="section-label">Install</div>
   <div class="install-block" onclick="copyInstall(this)">
-    <code><span class="cmd">curl -sL</span> https://raw.githubusercontent.com/4bdullatif/cc-beacon/main/install.sh <span class="cmd">| bash</span></code>
-    <span class="copy-hint">click to copy</span>
+    <code><span class="hl">curl -sL</span> https://raw.githubusercontent.com/4bdullatif/cc-beacon/main/install.sh <span class="hl">| bash</span></code>
+    <button class="copy-btn" aria-label="Copy to clipboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+      </svg>
+    </button>
   </div>
 </div>
 
@@ -403,25 +435,22 @@
 
 <script>
 // Stagger-in on load
-const items = document.querySelectorAll('[data-delay]');
-items.forEach(el => {
+document.querySelectorAll('[data-delay]').forEach(el => {
   const d = parseInt(el.dataset.delay, 10);
-  setTimeout(() => el.classList.add('show'), 600 + d * 180);
+  setTimeout(() => el.classList.add('show'), 500 + d * 200);
 });
 
 // Copy install command
 function copyInstall(block) {
   const cmd = 'curl -sL https://raw.githubusercontent.com/4bdullatif/cc-beacon/main/install.sh | bash';
   navigator.clipboard.writeText(cmd).then(() => {
-    const hint = block.querySelector('.copy-hint');
-    hint.textContent = 'copied';
-    hint.classList.add('copied');
-    hint.style.opacity = '1';
+    const btn = block.querySelector('.copy-btn');
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
     setTimeout(() => {
-      hint.textContent = 'click to copy';
-      hint.classList.remove('copied');
-      hint.style.opacity = '';
-    }, 1800);
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+    }, 2000);
   });
 }
 </script>
