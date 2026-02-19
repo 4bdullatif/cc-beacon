@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cc-beacon</title>
+<meta name="description" content="Floating HUD notifications for Claude Code on macOS.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c0e;
+    --surface: #141416;
+    --border: rgba(255,255,255,0.04);
+    --text: #d4d4d8;
+    --text-dim: #52525b;
+    --text-muted: #3f3f46;
+    --amber: #f59e0b;
+    --blue: #60a5fa;
+    --green: #4ade80;
+    --gray: #71717a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Grain overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 120px 24px 80px;
+    text-align: center;
+    position: relative;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 480px;
+    height: 480px;
+    background: radial-gradient(circle, rgba(74,222,128,0.03) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 14px;
+    margin-bottom: 28px;
+    background: rgba(255,255,255,0.01);
+  }
+  .badge::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px rgba(74,222,128,0.4);
+  }
+
+  .hero h1 {
+    font-size: 3rem;
+    font-weight: 300;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    color: #fafafa;
+    margin-bottom: 16px;
+  }
+  .hero h1 span {
+    font-weight: 600;
+  }
+
+  .hero p {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--text-dim);
+    max-width: 380px;
+    margin: 0 auto 32px;
+    line-height: 1.65;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--text);
+    text-decoration: none;
+    padding: 10px 22px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+    transition: all 0.3s ease;
+  }
+  .cta:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.14);
+    transform: translateY(-1px);
+  }
+  .cta svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+  }
+  .cta:hover svg { opacity: 0.8; }
+
+  /* ── HUD showcase ── */
+  .showcase {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 0 24px 80px;
+    position: relative;
+  }
+
+  .notif {
+    width: 340px;
+    border-radius: 14px;
+    background: rgba(28, 28, 32, 0.92);
+    border: 0.5px solid rgba(255,255,255,0.06);
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.3),
+      0 8px 32px rgba(0,0,0,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.02);
+    display: flex;
+    align-items: flex-start;
+    padding: 14px 16px;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .notif.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .notif::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 2.5px;
+    border-radius: 2px;
+  }
+  .notif.perm::before  { background: var(--amber); box-shadow: 0 0 12px rgba(245,158,11,0.15); }
+  .notif.feed::before  { background: var(--blue);  box-shadow: 0 0 12px rgba(96,165,250,0.15); }
+  .notif.done::before  { background: var(--green); box-shadow: 0 0 12px rgba(74,222,128,0.15); }
+
+  .n-icon {
+    font-size: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+    opacity: 0.9;
+  }
+  .n-body { flex: 1; min-width: 0; }
+  .n-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.88);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .n-msg {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.32);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 3px;
+  }
+  .n-proj {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.16);
+    margin-top: 6px;
+    letter-spacing: 0.01em;
+  }
+
+  /* ── Flow diagram ── */
+  .flow-section {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0 24px 48px;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .flow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 26px;
+  }
+  .flow pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 300;
+    color: var(--text-muted);
+    line-height: 2;
+    overflow-x: auto;
+  }
+  .flow .g { color: var(--green); opacity: 0.8; }
+  .flow .b { color: var(--blue); opacity: 0.8; }
+  .flow .y { color: var(--amber); opacity: 0.8; }
+  .flow .w { color: var(--text-dim); }
+
+  /* ── Install block ── */
+  .install-section {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0 24px 100px;
+  }
+
+  .install-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.3s;
+  }
+  .install-block:hover {
+    border-color: rgba(255,255,255,0.08);
+  }
+
+  .install-block code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 300;
+    color: var(--text-dim);
+    line-height: 1.6;
+    display: block;
+    white-space: nowrap;
+    overflow-x: auto;
+  }
+  .install-block code .cmd { color: var(--green); opacity: 0.7; }
+
+  .copy-hint {
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .install-block:hover .copy-hint { opacity: 1; }
+  .copy-hint.copied { color: var(--green); }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 0 24px 48px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    font-weight: 300;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+  footer a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  footer a:hover { color: var(--text); }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    .hero { padding: 80px 20px 60px; }
+    .hero h1 { font-size: 2.2rem; }
+    .notif { width: 300px; }
+    .showcase { padding: 0 16px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">macOS native</div>
+  <h1>cc-<span>beacon</span></h1>
+  <p>Floating HUD notifications for Claude Code. No dock icon. No Notification Center. Just a quiet overlay.</p>
+  <a href="https://github.com/4bdullatif/cc-beacon" class="cta">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    View on GitHub
+  </a>
+</div>
+
+<div class="showcase">
+  <div class="notif perm" data-delay="0">
+    <div class="n-icon">&#x23F8;</div>
+    <div class="n-body">
+      <div class="n-title">Permission Required</div>
+      <div class="n-msg">Claude wants to run: npm install</div>
+      <div class="n-proj">&#x1F4C1; my-saas-app</div>
+    </div>
+  </div>
+
+  <div class="notif feed" data-delay="1">
+    <div class="n-icon">&#x1F4AC;</div>
+    <div class="n-body">
+      <div class="n-title">Waiting for Input</div>
+      <div class="n-msg">Which database should I use for this project?</div>
+      <div class="n-proj">&#x1F4C1; my-saas-app</div>
+    </div>
+  </div>
+
+  <div class="notif done" data-delay="2">
+    <div class="n-icon">&#x2713;</div>
+    <div class="n-body">
+      <div class="n-title">Task Complete</div>
+      <div class="n-msg">All 47 tests passing. Created PR #142 for review.</div>
+      <div class="n-proj">&#x1F4C1; my-saas-app</div>
+    </div>
+  </div>
+</div>
+
+<div class="flow-section">
+  <div class="section-label">How it works</div>
+  <div class="flow">
+    <pre><span class="w">Hook JSON on stdin</span>
+  <span class="y">Notification</span>  notification_type &#x2192; HUD color &amp; icon
+                message           &#x2192; body text
+                cwd               &#x2192; project name
+
+  <span class="g">Stop</span>          transcript_path   &#x2192; last assistant message
+                cwd               &#x2192; project name
+
+  Output:  <span class="g">HUD overlay</span></pre>
+  </div>
+</div>
+
+<div class="install-section">
+  <div class="section-label">Install</div>
+  <div class="install-block" onclick="copyInstall(this)">
+    <code><span class="cmd">curl -sL</span> https://raw.githubusercontent.com/4bdullatif/cc-beacon/main/install.sh <span class="cmd">| bash</span></code>
+    <span class="copy-hint">click to copy</span>
+  </div>
+</div>
+
+<footer>
+  <a href="https://github.com/4bdullatif/cc-beacon">4bdullatif/cc-beacon</a> &nbsp;&middot;&nbsp; MIT
+</footer>
+
+<script>
+// Stagger-in on load
+const items = document.querySelectorAll('[data-delay]');
+items.forEach(el => {
+  const d = parseInt(el.dataset.delay, 10);
+  setTimeout(() => el.classList.add('show'), 600 + d * 180);
+});
+
+// Copy install command
+function copyInstall(block) {
+  const cmd = 'curl -sL https://raw.githubusercontent.com/4bdullatif/cc-beacon/main/install.sh | bash';
+  navigator.clipboard.writeText(cmd).then(() => {
+    const hint = block.querySelector('.copy-hint');
+    hint.textContent = 'copied';
+    hint.classList.add('copied');
+    hint.style.opacity = '1';
+    setTimeout(() => {
+      hint.textContent = 'click to copy';
+      hint.classList.remove('copied');
+      hint.style.opacity = '';
+    }, 1800);
+  });
+}
+</script>
+
+</body>
+</html>
